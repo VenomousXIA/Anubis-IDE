@@ -8,11 +8,15 @@ import glob
 import serial
 
 import Python_Coloring
+import CS_Coloring
 from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from pathlib import Path
+
+global file_extension
+file_extension = "py"
 
 def serial_ports():
     """ Lists serial port names
@@ -88,12 +92,11 @@ class text_widget(QWidget):
     def itUI(self):
         global text
         text = QTextEdit()
-        Python_Coloring.PythonHighlighter(text)
+        # Python_Coloring.PythonHighlighter(text)
+        # CS_Coloring.CsharpHighlighter(text)
         hbox = QHBoxLayout()
         hbox.addWidget(text)
         self.setLayout(hbox)
-
-
 
 #
 #
@@ -185,9 +188,15 @@ class Widget(QWidget):
     # defining a new Slot (takes string) to save the text inside the first text editor
     @pyqtSlot(str)
     def Saving(s):
-        with open('main.py', 'w') as f:
-            TEXT = text.toPlainText()
-            f.write(TEXT)
+        if file_extension == "py":
+            with open('main.py', 'w') as f:
+                TEXT = text.toPlainText()
+                f.write(TEXT)
+        else:
+            with open('main.cs', 'w') as f:
+                TEXT = text.toPlainText()
+                f.write(TEXT)
+
 
     # defining a new Slot (takes string) to set the string to the text editor
     @pyqtSlot(str)
@@ -199,6 +208,12 @@ class Widget(QWidget):
 
         nn = self.sender().model().filePath(index)
         nn = tuple([nn])
+        file_extension = nn[0].split(".")[1]
+
+        if file_extension == "py":
+            Python_Coloring.PythonHighlighter(text)
+        else:
+            CS_Coloring.CsharpHighlighter(text)
 
         if nn[0]:
             f = open(nn[0],'r')
@@ -343,6 +358,13 @@ class UI(QMainWindow):
     # I made this function to open a file and exhibits it to the user in a text editor
     def open(self):
         file_name = QFileDialog.getOpenFileName(self,'Open File','/home')
+
+        file_extension = file_name[0].split(".")[1]
+
+        if file_extension == "py":
+            Python_Coloring.PythonHighlighter(text)
+        else:
+            CS_Coloring.CsharpHighlighter(text)
 
         if file_name[0]:
             f = open(file_name[0],'r')
