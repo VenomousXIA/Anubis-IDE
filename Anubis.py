@@ -186,6 +186,7 @@ class Widget(QWidget):
         self.setLayout(Final_Layout)
 
     # defining a new Slot (takes string) to save the text inside the first text editor
+    # Edited: checks for file extension to correctly save Python or C# code
     @pyqtSlot(str)
     def Saving(s):
         if file_extension == "py":
@@ -208,8 +209,9 @@ class Widget(QWidget):
 
         nn = self.sender().model().filePath(index)
         nn = tuple([nn])
-        file_extension = nn[0].split(".")[1]
 
+        #Checks if the file is a Python or C# file to apply correct coloring
+        file_extension = nn[0].split(".")[1]
         if file_extension == "py":
             Python_Coloring.PythonHighlighter(text)
         else:
@@ -359,8 +361,9 @@ class UI(QMainWindow):
     def open(self):
         file_name = QFileDialog.getOpenFileName(self,'Open File','/home')
 
-        file_extension = file_name[0].split(".")[1]
 
+        #Checks for the file extension to apply correct coloring
+        file_extension = file_name[0].split(".")[1]
         if file_extension == "py":
             Python_Coloring.PythonHighlighter(text)
         else:
